@@ -9,7 +9,7 @@ export const useCountryStore = defineStore('country', {
   actions: {
     async fetchData(cname) {
       try {
-        const res = await fetch(`https://restcountries.com/v3.1/name/${cname}`)
+        const res = await fetch(`https://restcountries.com/v3.1/name/${cname}?fullText=true`)
         let data = await res.json()
         if (data && data.length > 0) {
           this.$patch({ cdata: data })
