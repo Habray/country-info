@@ -1,22 +1,40 @@
 import { defineStore } from 'pinia'
 
-export let useCountryStore = defineStore('country', {
-  state() {
-    return {
-      cname: 'nepal',
-      flag: '',
-      cdata: []
-    }
-  },
+export const useCountryStore = defineStore('country', {
+  state: () => ({
+    cname: 'nepal',
+    cdata: [],
+    ndata: []
+  }),
   actions: {
-    async fetchData() {
-      const res = await fetch(`https://restcountries.com/v3.1/name/${this.cname}`)
-      let data = await res.json()
-      let flag_src = await data[0].flags.png
-      this.$patch({
-        cdata: data,
-        flag: flag_src
-      })
+    async fetchData(cname) {
+      try {
+        const res = await fetch(`https://restcountries.com/v3.1/name/${cname}`)
+        let data = await res.json()
+        if (data && data.length > 0) {
+          this.$patch({ cdata: data })
+
+          const borders = data[0].borders
+          if (borders && borders.length > 0) {
+            const bordersCountry = borders[0]
+            const fetchBordersCountry = await fetch(
+              `https://restcountries.com/v3.1/alpha/${bordersCountry}`
+            )
+            let borderData = await fetchBordersCountry.json()
+            this.$patch({ ndata: borderData })
+          } else {
+            this.$patch({ ndata: [] })
+          }
+        } else {
+          this.$patch({ cdata: [], ndata: [] })
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        this.$patch({ cdata: [], ndata: [] })
+      }
+    },
+    async searchWithCountry(countryName) {
+      await this.fetchData(countryName)
     }
   }
 })
