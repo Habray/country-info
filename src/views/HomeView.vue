@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, watch, ref } from 'vue'
 import { useCountryStore } from '@/stores/CountryStore'
 import { useRouter } from 'vue-router'
 import SearchFormComponent from '@/components/SearchFormComponent.vue'
@@ -7,6 +7,11 @@ import CountryCardComponent from '@/components/CountryCardComponent.vue'
 
 const router = useRouter()
 const country = useCountryStore()
+let countryStatus = ref(false)
+let borderStatus = ref(false)
+onMounted(() => {
+  country.fetchData('nepal')
+})
 
 const countryData = computed(() => country.cdata)
 const borderData = computed(() => country.ndata)
@@ -46,6 +51,22 @@ async function searchCountry(searchText) {
 function navigateToDetail(CType) {
   router.push({ name: 'CountryDetail', params: { CType } })
 }
+
+watch(countryData, () => {
+  if (countryName.value) {
+    countryStatus.value = true
+  } else {
+    countryStatus.value = false
+  }
+})
+
+watch(borderData, () => {
+  if (n_countryName.value) {
+    borderStatus.value = true
+  } else {
+    borderStatus.value = false
+  }
+})
 </script>
 
 <template>
@@ -53,6 +74,7 @@ function navigateToDetail(CType) {
     <SearchFormComponent @search="searchCountry" />
     <div class="content-container">
       <CountryCardComponent
+        v-if="countryStatus"
         :cflag="flag_src"
         :cName="countryName"
         :cCapital="countryCapital"
@@ -61,6 +83,7 @@ function navigateToDetail(CType) {
         @click="navigateToDetail('main')"
       />
       <CountryCardComponent
+        v-if="borderStatus"
         :className="'neighbour'"
         :cflag="n_flag_src"
         :cName="n_countryName"
@@ -69,6 +92,7 @@ function navigateToDetail(CType) {
         :cPopulation="n_countryPopulation"
         @click="navigateToDetail('border')"
       />
+      <p v-if="!countryStatus && !borderStatus">No Result Found.</p>
     </div>
   </main>
 </template>

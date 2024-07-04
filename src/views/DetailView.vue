@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useCountryStore } from '@/stores/CountryStore'
 import { useRoute } from 'vue-router'
+import DetailCardComponent from '@/components/DetailCardComponent.vue'
 
 const route = useRoute()
 const country = useCountryStore()
@@ -13,14 +14,16 @@ const borderData = computed(() => country.ndata)
 </script>
 
 <template>
-  <section class="main-container">
-    <div v-if="cType === 'main'">
-      {{ countryData }}
-    </div>
-    <div v-else>
-      {{ borderData }}
-    </div>
+  <section class="detail-section">
+    <DetailCardComponent :data="countryData" v-if="cType === 'main'" />
+
+    <DetailCardComponent :data="borderData" v-else />
   </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+.detail-section {
+  display: flex;
+  justify-content: center;
+}
+</style>
