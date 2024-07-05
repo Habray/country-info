@@ -11,7 +11,7 @@ function searchCountry() {
 
 <template>
   <div class="search-container">
-    <form @submit.prevent="searchCountry" method="get">
+    <form @submit.prevent="searchCountry" @keyup="searchCountry" method="get">
       <input type="text" v-model="searchText" />
       <button type="submit">Search</button>
     </form>

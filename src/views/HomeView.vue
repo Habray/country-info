@@ -9,6 +9,7 @@ const router = useRouter()
 const country = useCountryStore()
 let countryStatus = ref(false)
 let borderStatus = ref(false)
+const isLoadingData = computed(() => country.isLoading)
 onMounted(() => {
   country.fetchData('nepal')
 })
@@ -73,6 +74,7 @@ watch(borderData, () => {
   <main class="main-container">
     <SearchFormComponent @search="searchCountry" />
     <div class="content-container">
+      <p v-if="isLoadingData">Loading...</p>
       <CountryCardComponent
         v-if="countryStatus"
         :cflag="flag_src"
@@ -92,7 +94,7 @@ watch(borderData, () => {
         :cPopulation="n_countryPopulation"
         @click="navigateToDetail('border')"
       />
-      <p v-if="!countryStatus && !borderStatus">No Result Found.</p>
+      <p v-if="!isLoadingData && !countryStatus && !borderStatus">No Result Found.</p>
     </div>
   </main>
 </template>
